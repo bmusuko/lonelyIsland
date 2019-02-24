@@ -2,23 +2,13 @@ import java.io.*;
 import java.util.*; 
 
 public class lonelyisland {
-	
-	public LinkedList<Integer> copyList(LinkedList<Integer> list){
-		LinkedList<Integer> temp = new LinkedList<Integer>();
-		Iterator<Integer> maju = list.iterator();
-		int x;
-		while(maju.hasNext()){
-			x = maju.next();
-			temp.add(x);
-		}
-		return temp;
-	}
 
-	public class Graph{
+	public class Graph{ //class graph
 		private int simpul;
 		private LinkedList<Integer> sisi[];
 		private int awal;		
-		//ctor
+		private boolean visited[];
+		private boolean pulau[];
 		
 		Graph(int simpul,int awal){
 			this.simpul = simpul;
@@ -27,33 +17,44 @@ public class lonelyisland {
 			for(int i=1;i<=simpul;i++){
 				sisi[i] = new LinkedList<Integer>();
 			}
+			visited = new boolean[simpul+1];
+			pulau = new boolean[simpul+1];
 		}
-		
 		void addEdge(int simpulAwal,int simpulAkhir){
 			sisi[simpulAwal].add(simpulAkhir);
 		}
-		
-		void jelajahRekursif(int s,LinkedList<Integer> save){
+		void jelajahRekursif(int s,LinkedList<Integer> save){ 
 			int l,c;
-			LinkedList<Integer> save2 = copyList(save);
-			save2.add(s);
+			save.add(s);
+			visited[s] = true; 
 			Iterator<Integer> maju = sisi[s].iterator();
 			if(!maju.hasNext()){
 				System.out.println("Lonely Island : "+s);
-				System.out.println("Dengan Jalur : "+save2);
+				System.out.println("Dengan Jalur : "+save);
+				pulau[s] = true;
 			} else{
 				c =0;
 				while(maju.hasNext()){
 					l = maju.next();
-					// System.out.println(l);
-					if(save2.indexOf(l) == -1){
-						jelajahRekursif(l,save2);
+					if(!visited[l]){
+						jelajahRekursif(l,save);
 						c++;
 					} 
 				}
 				if(c==0){
-				System.out.println("Lonely Island : "+s);
-				System.out.println("Dengan Jalur : "+save2);
+					System.out.println("Lonely Island : "+s);
+					System.out.println("Dengan Jalur : "+save);
+					pulau[s] = true;
+				}
+			}
+			visited[s] = false;
+			save.remove(save.size()-1);
+		}
+		void printPulau(){
+			System.out.println("Daftar Pulau yang dapat membuat pemain terjebak :");
+			for(int i=1;i<=simpul;i++){
+				if(pulau[i]){
+					System.out.println(i);
 				}
 			}
 		}
@@ -62,6 +63,7 @@ public class lonelyisland {
 			LinkedList<Integer> save;
 			save = new LinkedList<Integer>();
 			save.add(awal);
+			visited[awal] = true;
 			Iterator<Integer> maju = sisi[awal].iterator();
 			if (!maju.hasNext()){
 				System.out.println("Lonely Island : "+awal);
@@ -71,21 +73,19 @@ public class lonelyisland {
 				l = maju.next();
 				jelajahRekursif(l,save);
 			}
+			printPulau();
 		}
 	}
-    public void start() throws Exception{
+
+    public void start() throws Exception{ // membaca file dan memanggil rekursif
     	int n,m,r,u,v;
-    	Scanner reader = new Scanner(new File("output.txt"));
+    	Scanner reader = new Scanner(new File("input.txt"));
         System.out.println("Welcome To Lonely Island");
-        // System.out.print("Masukkan jumlah simpul: ");
         n = reader.nextInt();
-        // System.out.print("Masukkan jumlah sisi: ");
         m = reader.nextInt();
-        // System.out.print("Masukkan simpul awal: ");
         r = reader.nextInt();
         Graph g = new Graph(n,r);
         for(int i=1;i<=m;i++){
-        	// System.out.print("Masukkan simpul (u v) ke - "+i+" : ");
         	u = reader.nextInt();
         	v = reader.nextInt();
         	g.addEdge(u,v);
@@ -93,7 +93,7 @@ public class lonelyisland {
         g.jelajah();
     }
 
-	public static void main(String[] args) throws Exception{
+	public static void main(String[] args) throws Exception{ // main program
 		long startTime = System.nanoTime();
 		lonelyisland lonelyisland = new lonelyisland();
 		lonelyisland.start();
