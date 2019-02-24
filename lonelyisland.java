@@ -68,6 +68,7 @@ public class lonelyisland {
 			if (!maju.hasNext()){
 				System.out.println("Lonely Island : "+awal);
 				System.out.println("Dengan Jalur : "+save);
+				pulau[awal] = true;
 			}
 			while(maju.hasNext()){
 				l = maju.next();
